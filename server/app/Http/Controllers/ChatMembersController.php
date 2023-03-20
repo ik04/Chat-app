@@ -53,11 +53,25 @@ class ChatMembersController extends Controller
             return response()->noContent();
         }
     }
+    public function getRooms(Request $request){
+        $validation = Validator::make($request->all(),[
+            'user_id'=>'uuid',
+        ]);
+        if($validation->fails()){
+            return response()->json($validation->errors()->all(),400);
+        }
+        $validated = $validation->validated();
+        if($validated["user_id"]){
+            $user_id2 = chat_members::where("user_id",$validated["user_id"])->get("user_id2");
+            return response()->json($user_id2,200);
+        }else{
+            return response()->json("error",400);
+        }
+        
+    }
 }
 
 /*
 * if no content is returned in check the create room function is run and the obtained room id passed into create record,
 * otherwise the existing record is passed with the room id ready for use.
-* issue: refresh causes user change?????
-? not an issue just implement ssr to fix (redir to login when stored cookie is change), discuss with pranav or armaan
 */

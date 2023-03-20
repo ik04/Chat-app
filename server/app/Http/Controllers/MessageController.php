@@ -38,7 +38,7 @@ class MessageController extends Controller
     $validated = $validation->validated();
     //* implement inner join
     // $messages = Message::where("room_id",$validated['room_id'])->orderBy("created_at")->get();
-    $messages = Message::join("users","messages.user_id","=","users.user_id")->get(["name","message"]);
+    $messages = Message::join("users","messages.user_id","=","users.user_id")->where("room_id",$validated['room_id'])->get(["name","message"]);
     return response()->json($messages,200);
 
     

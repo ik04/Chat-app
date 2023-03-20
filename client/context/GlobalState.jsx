@@ -6,6 +6,7 @@ const GlobalState = (props) => {
   const [name, setName] = useState()
   const [userUuid, setUuid] = useState()
   const [email, setEmail] = useState()
+  const [token, setToken] = useState()
   const url = "http://localhost:8000/api/user-data"
 
   useEffect(() => {
@@ -19,6 +20,7 @@ const GlobalState = (props) => {
       setName(resp.data.user.name)
       setUuid(resp.data.user.user_id)
       setEmail(resp.data.user.email)
+      setToken(resp.data.access_token)
       axios.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${resp.data.access_token}`
@@ -27,7 +29,7 @@ const GlobalState = (props) => {
     }
   }
   return (
-    <GlobalContext.Provider value={{ email, name, userUuid }}>
+    <GlobalContext.Provider value={{ email, name, userUuid, token }}>
       {props.children}
     </GlobalContext.Provider>
   )

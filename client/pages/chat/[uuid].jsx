@@ -4,6 +4,7 @@ import { useRouter } from "next/router"
 import { GlobalContext } from "@/context/GlobalContext"
 import axios from "axios"
 import Navbar from "@/components/Navbar"
+import ScrollToBottom from "react-scroll-to-bottom"
 
 let socket
 
@@ -18,16 +19,16 @@ export default function Room(props) {
 
   const router = useRouter()
   const { uuid } = router.query
-  const test = async () => {
-    const url = "http://localhost:8000/api/is-user"
-    const resp = await axios.post(url, { user_id: uuid })
-    console.log(resp)
-  }
+  // const test = async () => {
+  //   const url = "http://localhost:8000/api/is-user"
+  //   const resp = await axios.post(url, { user_id: uuid })
+  //   console.log(resp)
+  // }
   // * figure out the interactions and setup routes for the same
   // * consider all posibilities
   console.log(uuid)
   useEffect(() => {
-    test()
+    // test()
     socketInitializer()
   }, [])
 
@@ -43,8 +44,7 @@ export default function Room(props) {
       })
       console.log(resp)
       if (resp.status === 200) {
-        // console.log(resp.data)
-        setRoom(resp.data.room_id) // use for sockets
+        setRoom(resp.data.room_id) // used for sockets
         joinRoom(resp.data.room_id)
         loadMessages(resp.data.room_id)
       }
@@ -63,7 +63,7 @@ export default function Room(props) {
           user_id: uuid, // to allow the reverse to be true
           user_id2: userUuid,
         })
-        // console.log(resp3)
+
         setRoom(resp3.data.room_id)
         joinRoom(resp3.data.room_id)
       }
@@ -239,9 +239,9 @@ export async function getServerSideProps(context) {
 // // CHECK IF PARAM UUID IS VALID THROUGH SSR TO PREVENT EXPLOITS
 // // todo prepare the schemas for storing room and user ids
 // // todo configure the websockets for messaging
-// todo implement other possible refactors and test out the messaging
-// todo add persistance through messages table
+// // todo add persistance through messages table
+// // todo make the events for the different interactions
 
-// todo understand how socket connection was established and why you failed
 // todo change the frontend and implement search route for the future messaging stuff
-// todo make the events for the different interactions
+// * implement other possible refactors and test out the messaging
+// ? understand how socket connection was established and why you failed

@@ -25,10 +25,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/register',[UserController::class,'register']);
 Route::post('/login',[UserController::class,'login']);
 Route::get('/user-data',[UserController::class,'getUserData']);
-Route::get('/index',[UserController::class,'index']);
 Route::post('/is-user',[UserController::class,'isUser']);
+// Route::get('/index',[UserController::class,'index']);
 
 Route::group(['middleware'=>['auth:sanctum']],function(){
+    Route::post("/isLog", function () {  
+        return response()->noContent();
+    });
     Route::post('/logout',[UserController::class,'logout']);
     Route::post('/search',[UserController::class,'searchUser']);
     Route::post('/room',[RoomController::class,'createRoom']);
@@ -36,6 +39,5 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::post('/members',[ChatMembersController::class,'addMemberRecord']);
     Route::post('/store-message',[MessageController::class,'storeMessage']);
     Route::post('/get-messages',[MessageController::class,'getMessages']);
+    Route::post('/rooms',[ChatMembersController::class,'getRooms']);
 });
-
-// *  add message model and controller and make it so route persist messages in frontend using ssr and dynamic routes (room id to fetch)

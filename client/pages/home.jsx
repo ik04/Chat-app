@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar"
 import SearchBar from "@/components/SearchBar"
 import { GlobalContext } from "@/context/GlobalContext"
+import axios from "axios"
 import React, { useContext } from "react"
 
 const home = () => {
@@ -14,9 +15,41 @@ const home = () => {
 }
 
 export default home
+export async function getServerSideProps(context) {
+  const url = "http://localhost:8000/api/user-data"
+  const cookie = context.req.cookies.at
+  const resp1 = await axios.get(url, { headers: { Cookie: `at=${cookie}` } })
+  axios.defaults.headers.common[
+    "Authorization"
+  ] = `Bearer ${resp1.data.access_token}`
+  const email = resp1.data.email
+
+  try {
+    const instance = axios.create({
+      withCredentials: true,
+    })
+    const url = "http://localhost:8000/api/isLog"
+    const resp = await instance.post(url, {})
+    if (resp.status !== 204) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: "/",
+        },
+      }
+    }
+  } catch (error) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/",
+      },
+    }
+  }
+  return { props: {} }
+}
 
 /*
-
 *Finished:
  *it works now make up the logic for the same, use the uuid in the param and setup the to redirect 
  todo create search users and then make an api route to create a room on clicking the user, if room exists then send that room id through api route or make a new one and then send that
@@ -28,12 +61,11 @@ export default home
  todo after implementing the room thingy make the sockets fit that (refactor the existing app)
  * the schema should have room id and participants
  * room id must be generated in backend!
+ todo only after thats done work on persisting messages, make a messages table that takes user and table as FK, for now the order of messages does not matter
  * 
  * 
  * 
  * Left:
- ! refactor routes acc to needs
  TODO after that move onto rendering existing rooms from the room table
- todo only after thats done work on persisting messages, make a messages table that takes user and table as FK, for now the order of messages does not matter
- ! one step at a time
+ 
  */

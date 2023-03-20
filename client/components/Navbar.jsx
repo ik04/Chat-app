@@ -17,11 +17,16 @@ const Navbar = (props) => {
   }
 
   return (
-    <div className="flex bg-purple-900    justify-between">
-      <div className="logo mx-3">
+    <div className="flex bg-purple-900 justify-between">
+      <div className="logo mx-3 space-x-20 flex">
         <Link href={"/home"}>
           <h2 className="font-extralight  text-white h-14 p-1 w-14  text-4xl cursor-pointer">
             {name}
+          </h2>
+        </Link>
+        <Link href={"/rooms"}>
+          <h2 className="font-extralight  text-white h-14 p-1 w-14  text-4xl cursor-pointer">
+            rooms
           </h2>
         </Link>
       </div>

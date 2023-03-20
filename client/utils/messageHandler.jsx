@@ -17,13 +17,3 @@ export default (io, socket) => {
   })
 }
 // * success
-
-// const storeMessage = async (userId, roomId, message) => {
-//   const url = "http://localhost:8000/api/store-message"
-//   const resp = await axios.post(url, {
-//     user_id: userId,
-//     room_id: roomId,
-//     message: message,
-//   })
-//   console.log(resp)
-// }
