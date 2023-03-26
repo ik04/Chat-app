@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import axios from "axios"
 import { useRouter } from "next/router"
+import { Toaster, toast } from "react-hot-toast"
 const RegisterForm = () => {
   const router = useRouter()
   const [password, setPassword] = useState("")
@@ -21,15 +22,20 @@ const RegisterForm = () => {
         password: password,
         password_confirmation: cpassword,
       })
+      toast.success("User Created Successfully")
       console.log(resp)
       router.push("/")
     } catch (error) {
-      console.log(error.response)
+      console.log(error.response.data)
+      error.response.data.forEach((error) => {
+        toast.error(error)
+      })
     }
   }
 
   return (
     <>
+      <Toaster />
       <div className="text-center mt-24">
         <div className="flex items-center justify-center">
           <svg

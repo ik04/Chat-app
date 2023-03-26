@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('chat_members', function (Blueprint $table) {
             $table->id();
             $table->string("room_id");
-            $table->string("user_id");
-            $table->string("user_id2");
+            $table->uuid("user_id");
+            $table->uuid("user_id2");
             $table->timestamps();
         });
     }

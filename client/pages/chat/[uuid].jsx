@@ -5,6 +5,7 @@ import { GlobalContext } from "@/context/GlobalContext"
 import axios from "axios"
 import Navbar from "@/components/Navbar"
 import ScrollToBottom from "react-scroll-to-bottom"
+import { Toaster, toast } from "react-hot-toast"
 
 let socket
 
@@ -19,16 +20,9 @@ export default function Room(props) {
 
   const router = useRouter()
   const { uuid } = router.query
-  // const test = async () => {
-  //   const url = "http://localhost:8000/api/is-user"
-  //   const resp = await axios.post(url, { user_id: uuid })
-  //   console.log(resp)
-  // }
   // * figure out the interactions and setup routes for the same
   // * consider all posibilities
-  console.log(uuid)
   useEffect(() => {
-    // test()
     socketInitializer()
   }, [])
 
@@ -46,7 +40,11 @@ export default function Room(props) {
       if (resp.status === 200) {
         setRoom(resp.data.room_id) // used for sockets
         joinRoom(resp.data.room_id)
-        loadMessages(resp.data.room_id)
+        toast.promise(loadMessages(resp.data.room_id), {
+          loading: "Loading messages...",
+          success: <b>Messages Loaded!</b>,
+          error: <b>Could not Load Messages</b>,
+        })
       }
 
       if (resp.status === 204) {
@@ -71,6 +69,8 @@ export default function Room(props) {
     } catch (error) {
       if (error.response.status === 403) {
         location.href = "/home"
+      } else {
+        console.log(error)
       }
     }
   }
@@ -81,6 +81,7 @@ export default function Room(props) {
 
   const loadMessages = async (roomId) => {
     const url = "http://localhost:8000/api/get-messages"
+
     const resp = await axios.post(url, {
       room_id: roomId,
     })
@@ -118,7 +119,7 @@ export default function Room(props) {
     })
   }
   //* sends message
-  const sendMessage = async () => {
+  const sendMessage = async (e) => {
     await socket.emit("createdMessage", {
       author: name,
       message: message,
@@ -150,6 +151,7 @@ export default function Room(props) {
   }
   return (
     <div className="overflow-y-hidden">
+      <Toaster />
       <Navbar />
       <div className="flex items-center p-4 mx-auto min-h-screen justify-center bg-purple-500">
         <main className="gap-4 flex flex-col items-center justify-center w-full h-full">
@@ -193,7 +195,7 @@ export default function Room(props) {
                   <div className="border-l border-gray-300 flex justify-center items-center  rounded-br-md group hover:bg-purple-500 transition-all">
                     <button
                       className="group-hover:text-white px-3 h-full"
-                      onClick={() => {
+                      onClick={(e) => {
                         sendMessage()
                       }}
                     >

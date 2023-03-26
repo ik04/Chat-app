@@ -53,22 +53,24 @@ class ChatMembersController extends Controller
             return response()->noContent();
         }
     }
-    public function getRooms(Request $request){
-        $validation = Validator::make($request->all(),[
-            'user_id'=>'uuid',
-        ]);
-        if($validation->fails()){
-            return response()->json($validation->errors()->all(),400);
-        }
-        $validated = $validation->validated();
-        if($validated["user_id"]){
-            $user_id2 = chat_members::where("user_id",$validated["user_id"])->get("user_id2");
-            return response()->json($user_id2,200);
-        }else{
-            return response()->json("error",400);
-        }
+    // public function getRooms(Request $request){
+    //     $validation = Validator::make($request->all(),[
+    //         'user_id'=>'uuid',
+    //     ]);
+    //     if($validation->fails()){
+    //         return response()->json($validation->errors()->all(),400);
+    //     }
+    //     $validated = $validation->validated();
+    //     if($validated["user_id"]){
+    //         $user_id2 = chat_members::where("user_id",$validated["user_id"])->get("user_id2");
+    //         // $user_id2 = $user_id2[0];
+    //         // $username = User::where("user_id",$user_id2)->get("name");
+    //         return response()->json($user_id2,200);
+    //     }else{
+    //         return response()->json("error",400);
+    //     }
         
-    }
+    // }
 }
 
 /*

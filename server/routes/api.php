@@ -39,5 +39,5 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::post('/members',[ChatMembersController::class,'addMemberRecord']);
     Route::post('/store-message',[MessageController::class,'storeMessage']);
     Route::post('/get-messages',[MessageController::class,'getMessages']);
-    Route::post('/rooms',[ChatMembersController::class,'getRooms']);
+    // Route::post('/rooms',[ChatMembersController::class,'getRooms']);
 });

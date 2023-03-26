@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import axios from "axios"
+import { Toaster, toast } from "react-hot-toast"
 
 const LoginForm = (props) => {
   const [password, setPassword] = useState("")
@@ -18,17 +19,19 @@ const LoginForm = (props) => {
         email: email,
         password: password,
       })
-      console.log(resp.data)
+      toast.success("Login Successful")
       if (resp.status === 200) {
         location.href = "/home"
       }
     } catch (error) {
       console.log(error)
+      toast.error(error.response.data.error)
     }
   }
 
   return (
     <>
+      <Toaster />
       <div className="text-center mt-24">
         <div className="flex items-center justify-center">
           <svg

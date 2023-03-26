@@ -10,9 +10,7 @@ const SearchBar = () => {
     e.preventDefault()
     const url = "http://localhost:8000/api/search"
     if (search === "") {
-      // console.log("its empty")
       const resp = await axios.post(url, {})
-      console.log(resp.data)
       let searchResults = []
       resp.data.forEach((element) => {
         searchResults.push(element)
@@ -35,7 +33,7 @@ const SearchBar = () => {
 
   return (
     <>
-      <form className="mb-10" onSubmit={searchUser}>
+      <form className="mb-10 m-10" onSubmit={searchUser}>
         <label
           htmlFor="default-search"
           className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
