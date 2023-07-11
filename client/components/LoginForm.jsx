@@ -1,33 +1,31 @@
-import React, { useEffect, useState } from "react"
-import Link from "next/link"
-import axios from "axios"
-import { Toaster, toast } from "react-hot-toast"
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import axios from "axios";
+import { Toaster, toast } from "react-hot-toast";
 
 const LoginForm = (props) => {
-  const [password, setPassword] = useState("")
-  // const [cpassword, setcPassword] = useState("");
-  const [email, setemail] = useState("")
-  const url = "http://localhost:8000/api/login"
-  // const url2 = "http://localhost:8000/api/index"
+  const [password, setPassword] = useState("");
+  const [email, setemail] = useState("");
+  const url = "http://localhost:8000/api/login";
   useEffect(() => {
-    console.clear()
-  })
+    console.clear();
+  });
   const login = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       const resp = await axios.post(url, {
         email: email,
         password: password,
-      })
-      toast.success("Login Successful")
+      });
+      toast.success("Login Successful");
       if (resp.status === 200) {
-        location.href = "/home"
+        location.href = "/home";
       }
     } catch (error) {
-      console.log(error)
-      toast.error(error.response.data.error)
+      console.log(error);
+      toast.error(error.response.data.error);
     }
-  }
+  };
 
   return (
     <>
@@ -117,7 +115,7 @@ const LoginForm = (props) => {
         </form>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default LoginForm
+export default LoginForm;

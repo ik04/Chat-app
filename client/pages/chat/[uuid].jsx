@@ -1,95 +1,95 @@
-import io from "socket.io-client"
-import { useState, useEffect, useContext } from "react"
-import { useRouter } from "next/router"
-import { GlobalContext } from "@/context/GlobalContext"
-import axios from "axios"
-import Navbar from "@/components/Navbar"
-import ScrollToBottom from "react-scroll-to-bottom"
-import { Toaster, toast } from "react-hot-toast"
+import io from "socket.io-client";
+import { useState, useEffect, useContext } from "react";
+import { useRouter } from "next/router";
+import { GlobalContext } from "@/context/GlobalContext";
+import axios from "axios";
+import Navbar from "@/components/Navbar";
+import ScrollToBottom from "react-scroll-to-bottom";
+import { Toaster, toast } from "react-hot-toast";
 
-let socket
+let socket;
 
 export default function Room(props) {
   // console.log(props.message)
-  const { userUuid, name } = useContext(GlobalContext)
+  const { userUuid, name } = useContext(GlobalContext);
 
-  const [isChat, setIsChat] = useState(false)
-  const [message, setMessage] = useState("")
-  const [messages, setMessages] = useState([])
-  const [room, setRoom] = useState()
+  const [isChat, setIsChat] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [room, setRoom] = useState();
 
-  const router = useRouter()
-  const { uuid } = router.query
+  const router = useRouter();
+  const { uuid } = router.query;
   // * figure out the interactions and setup routes for the same
   // * consider all posibilities
   useEffect(() => {
-    socketInitializer()
-  }, [])
+    socketInitializer();
+  }, []);
 
   const roomChecks = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      const checkRoomRecordLink = "http://localhost:8000/api/check-members"
-      const createRoomLink = "http://localhost:8000/api/room"
-      const createRecordLink = "http://localhost:8000/api/members"
+      const checkRoomRecordLink = "http://localhost:8000/api/check-members";
+      const createRoomLink = "http://localhost:8000/api/room";
+      const createRecordLink = "http://localhost:8000/api/members";
       const resp = await axios.post(checkRoomRecordLink, {
         user_id: userUuid,
         user_id2: uuid,
-      })
-      console.log(resp)
+      });
+      console.log(resp);
       if (resp.status === 200) {
-        setRoom(resp.data.room_id) // used for sockets
-        joinRoom(resp.data.room_id)
+        setRoom(resp.data.room_id); // used for sockets
+        joinRoom(resp.data.room_id);
         toast.promise(loadMessages(resp.data.room_id), {
           loading: "Loading messages...",
           success: <b>Messages Loaded!</b>,
           error: <b>Could not Load Messages</b>,
-        })
+        });
       }
 
       if (resp.status === 204) {
-        const resp = await axios.post(createRoomLink)
+        const resp = await axios.post(createRoomLink);
         // console.log(resp.data) // new room created
         const resp2 = await axios.post(createRecordLink, {
           room_id: resp.data,
           user_id: userUuid,
           user_id2: uuid, // under the condition that user is valid, which will be done by ssr
-        })
+        });
         // console.log(resp2)
         const resp3 = await axios.post(createRecordLink, {
           room_id: resp.data,
           user_id: uuid, // to allow the reverse to be true
           user_id2: userUuid,
-        })
+        });
 
-        setRoom(resp3.data.room_id)
-        joinRoom(resp3.data.room_id)
+        setRoom(resp3.data.room_id);
+        joinRoom(resp3.data.room_id);
       }
-      setIsChat(true)
+      setIsChat(true);
     } catch (error) {
       if (error.response.status === 403) {
-        location.href = "/home"
+        location.href = "/home";
       } else {
-        console.log(error)
+        console.log(error);
       }
     }
-  }
+  };
 
   const joinRoom = async (roomId) => {
-    await socket.emit("join_room", { room: roomId })
-  }
+    await socket.emit("join_room", { room: roomId });
+  };
 
   const loadMessages = async (roomId) => {
-    const url = "http://localhost:8000/api/get-messages"
+    const url = "http://localhost:8000/api/get-messages";
 
     const resp = await axios.post(url, {
       room_id: roomId,
-    })
-    console.log(resp)
-    let desctructure = []
+    });
+    console.log(resp);
+    let desctructure = [];
     resp.data.forEach((message) => {
-      desctructure.push(message)
-    })
+      desctructure.push(message);
+    });
     desctructure.forEach((message) => {
       setMessages((currentMsg) => [
         ...currentMsg,
@@ -98,13 +98,13 @@ export default function Room(props) {
           message: message.message,
           room: roomId,
         },
-      ])
-    })
-  }
+      ]);
+    });
+  };
 
   const socketInitializer = async () => {
-    await fetch("/api/socket")
-    socket = io()
+    await fetch("/api/socket");
+    socket = io();
     //* recieves
     socket.on("newIncomingMessage", (msg) => {
       setMessages((currentMsg) => [
@@ -115,9 +115,9 @@ export default function Room(props) {
           message: msg.message,
           room: msg.room,
         },
-      ])
-    })
-  }
+      ]);
+    });
+  };
   //* sends message
   const sendMessage = async (e) => {
     await socket.emit("createdMessage", {
@@ -125,30 +125,30 @@ export default function Room(props) {
       message: message,
       room: room,
       user_id: userUuid,
-    })
+    });
     setMessages((currentMsg) => [
       ...currentMsg,
       { author: name, user_id: userUuid, message: message, room: room },
-    ])
+    ]);
 
-    const url = "http://localhost:8000/api/store-message"
+    const url = "http://localhost:8000/api/store-message";
     const resp = await axios.post(url, {
       user_id: userUuid,
       room_id: room,
       message: message,
-    })
-    console.log(resp)
+    });
+    console.log(resp);
 
-    setMessage("")
-  }
+    setMessage("");
+  };
 
   const handleKeypress = (e) => {
     if (e.keyCode === 13) {
       if (message) {
-        sendMessage()
+        sendMessage();
       }
     }
-  }
+  };
   return (
     <div className="overflow-y-hidden">
       <Toaster />
@@ -179,7 +179,7 @@ export default function Room(props) {
                       >
                         {msg.author} : {msg.message}
                       </div>
-                    )
+                    );
                   })}
                 </div>
                 <div className="border-t border-gray-300 w-full flex rounded-bl-md">
@@ -196,7 +196,7 @@ export default function Room(props) {
                     <button
                       className="group-hover:text-white px-3 h-full"
                       onClick={(e) => {
-                        sendMessage()
+                        sendMessage();
                       }}
                     >
                       Send
@@ -209,31 +209,31 @@ export default function Room(props) {
         </main>
       </div>
     </div>
-  )
+  );
 }
 export async function getServerSideProps(context) {
-  const message = "ssr finished"
+  const message = "ssr finished";
   try {
-    const uuid = context.params.uuid
-    const url = "http://localhost:8000/api/is-user"
-    const resp = await axios.post(url, { user_id: uuid })
+    const uuid = context.params.uuid;
+    const url = "http://localhost:8000/api/is-user";
+    const resp = await axios.post(url, { user_id: uuid });
     if (resp.status !== 200) {
       return {
         redirect: {
           permanent: false,
           destination: "/home",
         },
-      }
+      };
     }
-    const name = resp.data.name
-    return { props: { name, message } }
+    const name = resp.data.name;
+    return { props: { name, message } };
   } catch (error) {
     return {
       redirect: {
         permanent: false,
         destination: "/home",
       },
-    }
+    };
   }
 }
 
